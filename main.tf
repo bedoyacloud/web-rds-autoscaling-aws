@@ -36,13 +36,13 @@ resource "aws_subnet" "public_subnet2" {
 resource "aws_subnet" "private_subnet1" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "192.168.2.0/24"
-  availability_zone = "us-west-2c"
+  availability_zone = "us-west-2a"
 }
 
 resource "aws_subnet" "private_subnet2" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "192.168.3.0/24"
-  availability_zone = "us-west-2d"
+  availability_zone = "us-west-2b"
 }
 
 resource "aws_db_subnet_group" "main" {
@@ -228,7 +228,7 @@ resource "aws_db_instance" "rds_instance" {
   username               = "admin"
   password               = var.my-db-password
   publicly_accessible    = false
-  availability_zone      = "us-west-2c"
+  availability_zone      = "us-west-2b"
   db_subnet_group_name   = aws_db_subnet_group.main.id
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
@@ -241,7 +241,7 @@ resource "aws_db_instance" "rds_instance" {
 # Configuración del ELB
 resource "aws_lb" "nab_lb" {
   name            = "nab-load-balancer"
-  subnets         = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
+  subnets         = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
   security_groups = [aws_security_group.web_sg.id]
   internal        = false
 
