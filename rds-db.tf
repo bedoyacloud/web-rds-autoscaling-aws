@@ -2,13 +2,13 @@
 resource "aws_db_instance" "rds_instance" {
   identifier             = "nb-rds-instance"
   db_name                = "nab_db"
-  allocated_storage      = 10
+  allocated_storage      = 5
   storage_type           = "gp2"
   engine                 = "mysql"
   engine_version         = "5.7"
   instance_class         = "db.t2.micro"
-  username               = "admin"
-  password               = var.my-db-password
+  username               = var.db_username
+  password               = var.db_paswword
   publicly_accessible    = false
   availability_zone      = "us-west-2b"
   db_subnet_group_name   = aws_db_subnet_group.main.id

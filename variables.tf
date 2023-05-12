@@ -13,12 +13,12 @@ variable "ec2_ami_id" {
 
 variable "db_username" {
   description = "AWS RDS Database Administrator Username"
-  type  = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }
 
 variable "db_paswword" {
   description = "AWS RDS Database Administrator Password"
-  type  = string
-  sensitive = true 
+  type        = string
+  sensitive   = true
 }
