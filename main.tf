@@ -1,10 +1,3 @@
-variable "my-db-password" {
-
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
 ### DATA MY IP
 data "http" "myip" {
   url = "http://ipv4.icanhazip.com"
@@ -160,61 +153,6 @@ resource "aws_route_table_association" "private_association2" {
 #####
 ##### 
 #####
-
-resource "aws_key_pair" "nab-key" {
-  key_name   = "nab-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDfCXhjoKb7JGQvM4Njp/S9Sg+C1GHvKVihqg8SELNjVYPTwYOqFNANRfBQ5guYoWwDH/2Pe2KSARMWCh/mNHfoxKAI65jC9wM4TNrPZw+REppoHADMdHIBxjLqOVNnfRyZk/PMu6NF6tAdLxAVzQeoNUihkuXGZP85Cbp6eHVtA5jlE8bZfkM56CdErVmfqkPf0bUu9GEJmMFdsgB3d7YywEsAuWJ2bp4sHUO5AUhkO7Jnoy8qZ74Ed987F5AdaDEvUZZKVCmpS2gFzU0bYlwilgMwyWZ61Vwi43QapllFe6x8bQW9t9QkU4ZOgLajiNGSjdE/tWtEjnb8ohgFbrql carloshernanbedoya@gmail.com"
-}
-
-
-# Configuración de la EC2
-resource "aws_instance" "web_server" {
-  ami                    = var.ec2_ami_id
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.private_subnet1.id
-  vpc_security_group_ids = [aws_security_group.web_sg.id]
-  key_name               = aws_key_pair.nab-key.key_name
-  user_data              = file("nginx-install.sh")
-
-  tags = {
-    Name = "Web Server" # Se puede cambiar el nombre según convenga. Esto solo es un tag
-  }
-
-  # # Activar el escalamiento basado en el uso de CPU usando stress
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "sudo apt-get install -y stress",
-  #     "while true; do stress --cpu 1 --timeout 300; done"
-  #   ]
-  # }
-
-  #   # Política de AutoEscalado basado en la utlización de CPU aunque no estoy seguro si esto sigue usandose así o ahora se utiliza un nuevo recurso llamado aws_autoscaling_policy. Probar y en caso de algo lo pasamos a ese nuevo recurso
-  #   scaling_policy {
-  #     name                      = "scale-up"
-  #     adjustment_type           = "ChangeInCapacity"
-  #     scaling_adjustment        = 1
-  #     cooldown                  = 300
-  #     alarm_comparison_operator = "GreaterThanOrEqualToThreshold"
-  #     alarm_threshold           = 65
-  #     alarm_evaluation_periods  = 2
-  #     scale_in_cooldown         = 300
-  #     scale_out_cooldown        = 300
-  #     metric_aggregation_type   = "Average"
-  #   }
-
-  #   scaling_policy {
-  #     name                      = "scale-down"
-  #     adjustment_type           = "ChangeInCapacity"
-  #     scaling_adjustment        = -1
-  #     cooldown                  = 300
-  #     alarm_comparison_operator = "LessThanOrEqualToThreshold"
-  #     alarm_threshold           = 40
-  #     alarm_evaluation_periods  = 2
-  #     scale_in_cooldown         = 300
-  #     scale_out_cooldown        = 300
-  #     metric_aggregation_type   = "Average"
-  #   }
-}
 
 resource "aws_lb" "nab_lb" {
   name            = "nab-load-balancer"
