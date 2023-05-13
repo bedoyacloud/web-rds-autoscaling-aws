@@ -5,11 +5,16 @@ resource "aws_launch_configuration" "aws_autoscale_conf" {
   # Defining the image ID of AWS EC2 instance
   image_id = var.ec2_ami_id
   # Defining the instance type of the AWS EC2 instance
-  instance_type = var.instance_type
+  instance_type = var.instance_ec2_type
   # Defining the Key that will be used to access the AWS EC2 instance
   key_name  = "kubernetes-lab"
   user_data = file("nginx-install.sh")
 }
+
+resource "aws_autoscaling_attachment" "autoscaling_attachment" {
+  autoscaling_group_name = aws_autoscaling_group.mygroup.id
+  lb_target_group_arn = aws_lb_target_group.nab_target_group.id
+  }
 
 # Creating the autoscaling group within us-east-1a availability zone
 resource "aws_autoscaling_group" "mygroup" {

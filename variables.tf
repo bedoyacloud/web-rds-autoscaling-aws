@@ -11,6 +11,13 @@ variable "ec2_ami_id" {
   default     = "ami-0ac64ad8517166fb1" # Amazon2 Linux AMI ID
 }
 
+variable "instance_ec2_type" {
+  description = "EC2 type"
+  type = string
+  default = "t2.micro"
+  
+}
+
 variable "db_username" {
   description = "AWS RDS Database Administrator Username"
   type        = string
