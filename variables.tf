@@ -13,9 +13,9 @@ variable "ec2_ami_id" {
 
 variable "instance_ec2_type" {
   description = "EC2 type"
-  type = string
-  default = "t2.micro"
-  
+  type        = string
+  default     = "t2.micro"
+
 }
 
 variable "db_username" {

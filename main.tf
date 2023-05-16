@@ -151,14 +151,16 @@ resource "aws_route_table_association" "private_association2" {
 
 
 #####
-##### 
+##### AWS LB
 #####
 
 resource "aws_lb" "nab_lb" {
-  name            = "nab-load-balancer"
-  subnets         = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
-  security_groups = [aws_security_group.web_sg.id]
-  internal        = false
+  name               = "nab-load-balancer"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
+  security_groups    = [aws_security_group.web_sg.id]
+
 
   tags = {
     Name = "Load Balancer"
@@ -166,20 +168,19 @@ resource "aws_lb" "nab_lb" {
 }
 
 resource "aws_lb_target_group" "nab_target_group" {
-  name        = "nab-target-group"
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "instance"
+  name     = "nab-target-group"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
 
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    interval            = 30
-    timeout             = 5
-    protocol            = "HTTP"
-    path                = "/"
-  }
+  # health_check {
+  #   healthy_threshold   = 2
+  #   unhealthy_threshold = 2
+  #   interval            = 30
+  #   timeout             = 5
+  #   protocol            = "HTTP"
+  #   path                = "/"
+  # }
 }
 
 resource "aws_lb_listener" "nab_listener" {
@@ -193,8 +194,7 @@ resource "aws_lb_listener" "nab_listener" {
   }
 }
 
-# resource "aws_lb_target_group_attachment" "lb_target_group_attachment" {
-#   target_group_arn = aws_lb_target_group.nab_target_group.arn
-#   target_id        = aws_lb.nab_lb.id
-#   port             = 80
-# }
+resource "aws_autoscaling_attachment" "autoscaling_attachment" {
+  autoscaling_group_name = aws_autoscaling_group.mygroup.id
+  alb_target_group_arn   = aws_lb_target_group.nab_target_group.arn
+}

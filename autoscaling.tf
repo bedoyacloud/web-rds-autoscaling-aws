@@ -1,60 +1,40 @@
-# Creating the autoscaling launch configuration that contains AWS EC2 instance details
 resource "aws_launch_configuration" "aws_autoscale_conf" {
-  # Defining the name of the Autoscaling launch configuration
-  name = "web_config"
-  # Defining the image ID of AWS EC2 instance
-  image_id = var.ec2_ami_id
-  # Defining the instance type of the AWS EC2 instance
+  name_prefix   = "web-config-"
+  image_id      = var.ec2_ami_id
   instance_type = var.instance_ec2_type
-  # Defining the Key that will be used to access the AWS EC2 instance
-  key_name  = "kubernetes-lab"
-  user_data = file("nginx-install.sh")
+  key_name      = "kubernetes-lab"
+  user_data     = file("nginx-install.sh")
+  #security_groups = [aws_security_group.web_sg.id]
 }
 
-resource "aws_autoscaling_attachment" "autoscaling_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.mygroup.id
-  lb_target_group_arn = aws_lb_target_group.nab_target_group.id
-  }
+# resource "aws_autoscaling_attachment" "autoscaling_attachment" {
+#   autoscaling_group_name = aws_autoscaling_group.mygroup.id
+#   lb_target_group_arn = aws_lb_target_group.nab_target_group.id
+#   }
 
 # Creating the autoscaling group within us-east-1a availability zone
 resource "aws_autoscaling_group" "mygroup" {
-  # Defining the availability Zone in which AWS EC2 instance will be launched
-  availability_zones = ["us-west-2a", "us-west-2b"]
-  # Specifying the name of the autoscaling group
-  name = "autoscalegroup"
-  # Defining the maximum number of AWS EC2 instances while scaling
-  max_size = 4
-  # Defining the minimum number of AWS EC2 instances while scaling
-  min_size = 2
-  # Grace period is the time after which AWS EC2 instance comes into service before checking health.
-  health_check_grace_period = 30
-  # The Autoscaling will happen based on health of AWS EC2 instance defined in AWS CLoudwatch Alarm 
-  health_check_type = "EC2"
-  # force_delete deletes the Auto Scaling Group without waiting for all instances in the pool to terminate
-  force_delete = true
-  # Defining the termination policy where the oldest instance will be replaced first 
-  termination_policies = ["OldestInstance"]
-  # Scaling group is dependent on autoscaling launch configuration because of AWS EC2 instance configurations
-  launch_configuration = aws_launch_configuration.aws_autoscale_conf.name
+  availability_zones        = ["us-west-2a", "us-west-2b"]
+  name                      = "autoscalegroup"
+  max_size                  = 4
+  min_size                  = 2
+  force_delete              = true
+  termination_policies      = ["OldestInstance"]
+  launch_configuration      = aws_launch_configuration.aws_autoscale_conf.name
+  # target_group_arns    = [aws_lb_target_group.nab_target_group.id]
 }
-# Creating the autoscaling schedule of the autoscaling group
 
-# Creating the autoscaling policy of the autoscaling group
 resource "aws_autoscaling_policy" "mygroup_policy_up" {
-  name = "autoscalegroup_policy_up"
-  # The number of instances by which to scale.
-  scaling_adjustment = 1
-  adjustment_type    = "ChangeInCapacity"
-  # The amount of time (seconds) after a scaling completes and the next scaling starts.
+  name                   = "autoscalegroup_policy_up"
+  scaling_adjustment     = 1
+  adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
   autoscaling_group_name = aws_autoscaling_group.mygroup.name
 }
 resource "aws_autoscaling_policy" "mygroup_policy_down" {
-  name = "autoscalegroup_policy_dowm"
-  # The number of instances by which to scale.
-  scaling_adjustment = -1
-  adjustment_type    = "ChangeInCapacity"
-  # The amount of time (seconds) after a scaling completes and the next scaling starts.
+  name                   = "autoscalegroup_policy_dowm"
+  scaling_adjustment     = -1
+  adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
   autoscaling_group_name = aws_autoscaling_group.mygroup.name
 }
