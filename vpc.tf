@@ -1,9 +1,3 @@
-### DATA MY IP
-data "http" "myip" {
-  url = "http://ipv4.icanhazip.com"
-}
-
-
 # Configuración del VPC y la Subnet
 resource "aws_vpc" "main" {
   cidr_block = "192.168.0.0/16"
@@ -16,6 +10,7 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "public_subnet1" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "192.168.0.0/24"
+  map_public_ip_on_launch = true
   availability_zone = "us-west-2a"
 }
 
@@ -23,6 +18,7 @@ resource "aws_subnet" "public_subnet1" {
 resource "aws_subnet" "public_subnet2" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "192.168.1.0/24"
+  map_public_ip_on_launch = true
   availability_zone = "us-west-2b"
 }
 
@@ -147,54 +143,7 @@ resource "aws_route_table_association" "private_association2" {
   route_table_id = aws_route_table.private_route_table.id
 }
 
-
-
-
-#####
-##### AWS LB
-#####
-
-resource "aws_lb" "nab_lb" {
-  name               = "nab-load-balancer"
-  internal           = false
-  load_balancer_type = "application"
-  subnets            = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
-  security_groups    = [aws_security_group.web_sg.id]
-
-
-  tags = {
-    Name = "Load Balancer"
-  }
-}
-
-resource "aws_lb_target_group" "nab_target_group" {
-  name     = "nab-target-group"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
-
-  # health_check {
-  #   healthy_threshold   = 2
-  #   unhealthy_threshold = 2
-  #   interval            = 30
-  #   timeout             = 5
-  #   protocol            = "HTTP"
-  #   path                = "/"
-  # }
-}
-
-resource "aws_lb_listener" "nab_listener" {
-  load_balancer_arn = aws_lb.nab_lb.arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    target_group_arn = aws_lb_target_group.nab_target_group.arn
-    type             = "forward"
-  }
-}
-
-resource "aws_autoscaling_attachment" "autoscaling_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.mygroup.id
-  alb_target_group_arn   = aws_lb_target_group.nab_target_group.arn
+### DATA MY IP
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
 }

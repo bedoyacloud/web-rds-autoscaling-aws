@@ -1,27 +1,24 @@
-resource "aws_launch_configuration" "aws_autoscale_conf" {
-  name_prefix   = "web-config-"
-  image_id      = var.ec2_ami_id
-  instance_type = var.instance_ec2_type
-  key_name      = "kubernetes-lab"
-  user_data     = file("nginx-install.sh")
-  #security_groups = [aws_security_group.web_sg.id]
+resource "aws_launch_configuration" "autoscale_template" {
+  image_id             = var.ec2_ami_id
+  instance_type        = var.instance_ec2_type
+  key_name             = "kubernetes-lab"
+  user_data            = file("nginx-install.sh")
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+  security_groups      = [aws_security_group.web_sg.id]
 }
-
-# resource "aws_autoscaling_attachment" "autoscaling_attachment" {
-#   autoscaling_group_name = aws_autoscaling_group.mygroup.id
-#   lb_target_group_arn = aws_lb_target_group.nab_target_group.id
-#   }
 
 # Creating the autoscaling group within us-east-1a availability zone
 resource "aws_autoscaling_group" "mygroup" {
-  availability_zones        = ["us-west-2a", "us-west-2b"]
-  name                      = "autoscalegroup"
-  max_size                  = 4
-  min_size                  = 2
-  force_delete              = true
-  termination_policies      = ["OldestInstance"]
-  launch_configuration      = aws_launch_configuration.aws_autoscale_conf.name
-  # target_group_arns    = [aws_lb_target_group.nab_target_group.id]
+  vpc_zone_identifier = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
+  # name                 = "autoscalegroup"
+  max_size             = 4
+  min_size             = 1
+  force_delete         = true
+  termination_policies = ["OldestInstance"]
+  target_group_arns    = [aws_alb_target_group.webserver.arn]
+  health_check_type    = "ELB"
+
+  launch_configuration = aws_launch_configuration.autoscale_template.name
 }
 
 resource "aws_autoscaling_policy" "mygroup_policy_up" {

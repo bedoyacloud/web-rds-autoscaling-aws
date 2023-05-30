@@ -1,27 +1,32 @@
-# Create Security Group - SSH Traffic
 resource "aws_security_group" "web_sg" {
   name        = "SG-EC2-WebServer"
   description = "Security Group EC2 WebServer"
   vpc_id      = aws_vpc.main.id
-  # Regla para permitir la entrada de tráfico solo desde la IP Pública del NAB. Los puertos también pueden ser cambiados si se requiere
+
   ingress {
     description = "Allow Port 80"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Reemplazar <NAB's Public IP> con el Public IP que se quiere usar
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Permitir el acceso SSH desde la IP propia (o la que se desee)
   ingress {
     description = "Allow Port 22"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Reemplazar con la IP propia (o la que se desee)
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Permitir la salida de tráfico hacia internet
+  ingress {
+    description = "Self HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    self        = true
+  }
+
   egress {
     description = "Allow all IP and Ports outbound"
     from_port   = 0
@@ -30,7 +35,6 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
 
 resource "aws_security_group" "rds_sg" {
   name        = "SG-RDS-EC2"
@@ -45,10 +49,36 @@ resource "aws_security_group" "rds_sg" {
     security_groups = [aws_security_group.web_sg.id]
   }
 
-  # egress {
-  # from_port   = 0
-  # to_port     = 0
-  # protocol    = "-1"
-  # cidr_blocks = ["0.0.0.0/0"]
-  # }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "alb" {
+  name        = "ALB-SG"
+  description = "alb network traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "80 from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    # security_groups = [aws_security_group.web_sg.id]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow traffic"
+  }
 }
