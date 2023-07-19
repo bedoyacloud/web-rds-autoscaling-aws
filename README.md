@@ -1,1 +1,0 @@
-# web-rds-autoscaling-aws
