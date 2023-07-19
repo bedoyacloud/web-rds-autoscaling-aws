@@ -18,14 +18,23 @@ variable "instance_ec2_type" {
 
 }
 
-variable "db_username" {
-  description = "AWS RDS Database Administrator Username"
-  type        = string
-  sensitive   = true
-}
+# variable "db_username" {
+#   description = "AWS RDS Database Administrator Username"
+#   type        = string
+#   sensitive   = true
+# }
 
-variable "db_paswword" {
-  description = "AWS RDS Database Administrator Password"
-  type        = string
-  sensitive   = true
+# variable "db_paswword" {
+#   description = "AWS RDS Database Administrator Password"
+#   type        = string
+#   sensitive   = true
+# }
+
+variable "tags" {
+    description = "Project common tags"
+    type = map(string)
+    default = {
+      "project" = "Terraform-challenge-bedoya"
+      "owner" = "Bedoya-CloudOps"
+    }
 }

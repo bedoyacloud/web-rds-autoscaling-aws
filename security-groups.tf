@@ -20,11 +20,11 @@ resource "aws_security_group" "web_sg" {
   }
 
   ingress {
-    description = "Self HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    self        = true
+    description     = "Allow ping from Public EC2"
+    from_port       = 0
+    to_port         = 0
+    protocol        = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -36,15 +36,23 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-resource "aws_security_group" "rds_sg" {
-  name        = "SG-RDS-EC2"
-  description = "Security Group from RDS to EC2"
+resource "aws_security_group" "ec2_internal_sg" {
+  name        = "SG-SSH-EC2"
+  description = "Security Group from public to private EC2"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "Allow MySQL traffic from only the web sg"
-    from_port       = 3306
-    to_port         = 3306
+    description     = "Allow SSH from Public EC2"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_sg.id]
+  }
+
+  ingress {
+    description     = "Allow ping from Public EC2"
+    from_port       = 0
+    to_port         = 0
     protocol        = "tcp"
     security_groups = [aws_security_group.web_sg.id]
   }
@@ -54,31 +62,5 @@ resource "aws_security_group" "rds_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "alb" {
-  name        = "ALB-SG"
-  description = "alb network traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    description = "80 from anywhere"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    # security_groups = [aws_security_group.web_sg.id]
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "allow traffic"
   }
 }

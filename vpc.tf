@@ -14,7 +14,6 @@ resource "aws_subnet" "public_subnet1" {
   availability_zone = "us-west-2a"
 }
 
-
 resource "aws_subnet" "public_subnet2" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "192.168.1.0/24"
@@ -34,14 +33,14 @@ resource "aws_subnet" "private_subnet2" {
   availability_zone = "us-west-2b"
 }
 
-resource "aws_db_subnet_group" "main" {
-  name       = "db_subnet_group"
-  subnet_ids = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
+# resource "aws_db_subnet_group" "main" {
+#   name       = "db_subnet_group"
+#   subnet_ids = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
 
-  tags = {
-    Name = "My DB subnet group"
-  }
-}
+#   tags = {
+#     Name = "My DB subnet group"
+#   }
+# }
 
 ######
 ###### Internet Gateway
@@ -143,7 +142,3 @@ resource "aws_route_table_association" "private_association2" {
   route_table_id = aws_route_table.private_route_table.id
 }
 
-### DATA MY IP
-data "http" "myip" {
-  url = "http://ipv4.icanhazip.com"
-}
