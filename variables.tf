@@ -5,36 +5,45 @@ variable "aws_region" {
   default     = "us-west-2"
 }
 
-variable "ec2_ami_id" {
+variable "ami_id" {
   description = "AMI ID"
   type        = string
-  default     = "ami-0ac64ad8517166fb1" # Amazon2 Linux AMI ID
+  default     = "ami-03f65b8614a860c29" # Amazon2 Linux AMI ID
 }
 
 variable "instance_ec2_type" {
   description = "EC2 type"
   type        = string
   default     = "t2.micro"
-
 }
 
-# variable "db_username" {
-#   description = "AWS RDS Database Administrator Username"
-#   type        = string
-#   sensitive   = true
-# }
+variable "client_name" {
+  description = "Nombre del Cliente"
+  type        = string
+  default     = "pragma"
+}
 
-# variable "db_paswword" {
-#   description = "AWS RDS Database Administrator Password"
-#   type        = string
-#   sensitive   = true
-# }
+variable "project_name" {
+  description = "Nombre del Proyecto"
+  type        = string
+  default     = "reto1"
+}
 
-variable "tags" {
-    description = "Project common tags"
-    type = map(string)
-    default = {
-      "project" = "Terraform-challenge-bedoya"
-      "owner" = "Bedoya-CloudOps"
-    }
+variable "environment" {
+  description = "Nombre del Ambiente"
+  type        = string
+  default     = "dev"
+}
+
+variable "owner" {
+  description = "Responsable del Proyecto"
+  type        = string
+  default     = "carlos.bedoya"
+}
+
+locals {
+  client_name  = var.client_name
+  project_name = var.project_name
+  environment  = var.environment
+  owner        = var.owner
 }

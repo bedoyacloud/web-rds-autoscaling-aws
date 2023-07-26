@@ -20,10 +20,10 @@ resource "aws_security_group" "web_sg" {
   }
 
   ingress {
-    description     = "Allow ping from Public EC2"
-    from_port       = 0
-    to_port         = 0
-    protocol        = "icmp"
+    description = "Allow ping from Public EC2"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
