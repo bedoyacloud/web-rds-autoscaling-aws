@@ -163,7 +163,6 @@ resource "aws_route_table_association" "private_association2" {
 
 resource "aws_key_pair" "nab-key" {
   key_name   = "nab-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDfCXhjoKb7JGQvM4Njp/S9Sg+C1GHvKVihqg8SELNjVYPTwYOqFNANRfBQ5guYoWwDH/2Pe2KSARMWCh/mNHfoxKAI65jC9wM4TNrPZw+REppoHADMdHIBxjLqOVNnfRyZk/PMu6NF6tAdLxAVzQeoNUihkuXGZP85Cbp6eHVtA5jlE8bZfkM56CdErVmfqkPf0bUu9GEJmMFdsgB3d7YywEsAuWJ2bp4sHUO5AUhkO7Jnoy8qZ74Ed987F5AdaDEvUZZKVCmpS2gFzU0bYlwilgMwyWZ61Vwi43QapllFe6x8bQW9t9QkU4ZOgLajiNGSjdE/tWtEjnb8ohgFbrql carloshernanbedoya@gmail.com"
 }
 
 
